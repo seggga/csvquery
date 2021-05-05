@@ -19,3 +19,20 @@ func TestConvertToRPN(t *testing.T) {
 		}
 	}
 }
+
+func TestIsOperator(t *testing.T) {
+	testTable := []struct {
+		in       string
+		expected bool
+	}{{">", true},
+		{"AND", true},
+		{"==", true},
+		{"asdf", false},
+	}
+
+	for _, table := range testTable {
+		if isOperator(table.in) != table.expected {
+			t.FailNow()
+		}
+	}
+}
