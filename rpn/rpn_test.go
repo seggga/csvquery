@@ -1,6 +1,9 @@
 package rpn
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestConvertToRPN(t *testing.T) {
 	query := []string{"age", ">", "40", "AND", "(", "city", "=", "Tokyo", "OR", "new", ">=", "1000", ")"}
@@ -11,6 +14,9 @@ func TestConvertToRPN(t *testing.T) {
 		t.Fatal("got nil-slice")
 	}
 	if len(got) != len(expected) {
+		fmt.Printf("expected: %v\n", expected)
+		fmt.Printf("     got: %v\n", got)
+
 		t.Fatal("slices differ in size")
 	}
 	for i := 0; i < len(expected); i += 1 {

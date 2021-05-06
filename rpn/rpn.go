@@ -6,17 +6,21 @@ func ConvertToRPN(query []string) []string {
 	var stackPriority, tokenPriority int
 
 	for _, token := range query {
+		// операнд сразу заносится в выходную строку
 		if isOperand(token) {
 			rpn = append(rpn, token)
 			continue
 		}
 
+		// открывающая скобка сразу идет в стек
 		if token == "(" {
 			stack = append(stack, token)
 			continue
 		}
-		if token == ")" { // извлечение всех тоекнов из стека до "("
-			for i := len(stack); i >= 0; i -= 1 {
+
+		// закрывающая скобка извлекает все элементы из стека до символа "("
+		if token == ")" {
+			for i := len(stack) - 1; i >= 0; i -= 1 {
 				stackToken := stack[i]
 				stack = stack[:i]
 
@@ -29,26 +33,25 @@ func ConvertToRPN(query []string) []string {
 			continue
 		}
 
+		// оператор участвует в ветвлении
 		if isOperator(token) {
 			tokenPriority = getPriority(token)
 
 			// стек пуст - записываем знак операции в стек
 			if len(stack) == 0 {
 				stack = append(stack, token)
-				stackPriority = tokenPriority
 				continue
 			}
 
-			// стек не пуст, извлекаем все токены, чей приоритет больше либо равен текущему
-			for i := len(stack); i >= 0; i -= 1 {
+			// стек не пуст, извлекаем все операторы из стека, чей приоритет >= приоритету токена
+			// затем помещаем токен в стек
+			for i := len(stack) - 1; i >= 0; i -= 1 {
 
 				stackToken := stack[i]
-				if isOperator(stackToken) {
-					stackPriority = getPriority(stackToken)
-				}
+				stackPriority = getPriority(stackToken)
 
-				// приоритет у текущей операции больше, чем у стека - кладем токен в стек
-				if stackPriority < tokenPriority {
+				// приоритет у токена больше, чем у вершины стека - кладем токен в стек
+				if tokenPriority > stackPriority {
 					stack = append(stack, token)
 					break
 				}
@@ -58,16 +61,28 @@ func ConvertToRPN(query []string) []string {
 				rpn = append(rpn, stackToken)
 			}
 
-		}
+			// если из стека извлекли все операторы, то токен заносим в стек
+			if len(stack) == 0 {
+				stack = append(stack, token)
+			}
 
+		} // if isOperator(token)
+	} // for _, token := range query
+
+	// все токены просмотрены, надо опустошить стек
+	for i := len(stack) - 1; i >= 0; i -= 1 {
+		stackToken := stack[i]
+		stack = stack[:i]
+		rpn = append(rpn, stackToken)
 	}
-	return nil
+
+	return rpn
 }
 
 func isOperator(token string) bool {
 
 	switch token {
-	case ">", ">=", "<", "<=", "==":
+	case ">", ">=", "<", "<=", "==", "=":
 		return true
 	case "AND", "OR":
 		return true
@@ -97,9 +112,9 @@ func getPriority(token string) int {
 		return 0
 	case ")":
 		return 1
-	case ">", "<", "==", ">=", "<=":
-		return 2
 	case "AND", "OR":
+		return 2
+	case ">", "<", "==", ">=", "<=", "=":
 		return 3
 	default:
 		return 100 // never gonna be returned
