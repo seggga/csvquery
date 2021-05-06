@@ -226,12 +226,12 @@ var tokens = [...]string{
 	// RANGE:     "range",
 	// RETURN:    "return",
 
-	SELECT: "select",
-	FROM:   "from",
-	WHERE:  "where",
+	SELECT: "SELECT",
+	FROM:   "FROM",
+	WHERE:  "WHERE",
 
-	AND: "and",
-	OR:  "or",
+	AND: "AND",
+	OR:  "OR",
 	// STRUCT: "struct",
 	// SWITCH: "switch",
 	// TYPE:   "type",
