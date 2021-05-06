@@ -2,7 +2,7 @@ package lexemma
 
 import "github.com/seggga/csvquery/token"
 
-func SplitToLexemmas(query string) []Lexemma {
+func SplitQuery(query string) []Lexemma {
 
 	var scanner token.Scanner
 	var lexx []Lexemma
