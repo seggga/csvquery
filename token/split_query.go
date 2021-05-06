@@ -19,6 +19,10 @@ func SplitQuery(query string) []Lexemma {
 			continue
 		}
 
+		// cut double quotes from 'STRING' literal (for example "Tokyo", where quotes are a part of the 'lit')
+		if tok.String() == "STRING" {
+			lit = lit[1 : len(lit)-1]
+		}
 		lexx = append(lexx, Lexemma{Token: tok.String(), Litera: lit})
 	}
 
