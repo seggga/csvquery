@@ -40,15 +40,20 @@ func TestConvertToRPN(t *testing.T) {
 
 	got := ConvertToRPN(query)
 
+	// got empty slice
 	if got == nil {
 		t.Fatal("got nil-slice")
 	}
+
+	// got slice with different length
 	if len(got) != len(expect) {
 		fmt.Printf("expected: %v\n", expect)
 		fmt.Printf("     got: %v\n", got)
 
 		t.Fatal("slices differ in size")
 	}
+
+	// slices with different elements
 	for i := 0; i < len(expect); i += 1 {
 		if got[i] != expect[i] {
 			t.Fatal("slices differ in elements")
@@ -56,23 +61,62 @@ func TestConvertToRPN(t *testing.T) {
 	}
 }
 
-// func TestIsOperator(t *testing.T) {
-// 	testTable := []struct {
-// 		in       string
-// 		expected bool
-// 	}{{">", true},
-// 		{"AND", true},
-// 		{"==", true},
-// 		{"asdf", false},
-// 	}
-
-// 	for _, table := range testTable {
-// 		if isOperator(table.in) != table.expected {
-// 			t.FailNow()
-// 		}
-// 	}
-// }
-
 func TestInsertValues(t *testing.T) {
+
+	initialRPN := []token.Lexemma{
+		{Token: "IDENT", Litera: "age"},
+		{Token: "INT", Litera: "40"},
+		{Token: "COMP", Litera: ">"},
+		{Token: "IDENT", Litera: "city"},
+		{Token: "STRING", Litera: "Tokyo"},
+		{Token: "COMP", Litera: "="},
+		{Token: "IDENT", Litera: "new"},
+		{Token: "INT", Litera: "1000"},
+		{Token: "COMP", Litera: ">="},
+		{Token: "OR", Litera: "OR"},
+		{Token: "AND", Litera: "AND"},
+	}
+	csvData := map[string]string{
+		"age":       "35",
+		"city":      "Tokyo",
+		"new":       "1001",
+		"some_data": "data",
+	}
+
+	expect := []token.Lexemma{
+		{Token: "IDENT", Litera: "35"},
+		{Token: "INT", Litera: "40"},
+		{Token: "COMP", Litera: ">"},
+		{Token: "IDENT", Litera: "Tokyo"},
+		{Token: "STRING", Litera: "Tokyo"},
+		{Token: "COMP", Litera: "="},
+		{Token: "IDENT", Litera: "1001"},
+		{Token: "INT", Litera: "1000"},
+		{Token: "COMP", Litera: ">="},
+		{Token: "OR", Litera: "OR"},
+		{Token: "AND", Litera: "AND"},
+	}
+
+	got := InsertValues(csvData, initialRPN)
+
+	// got empty slice
+	if got == nil {
+		t.Fatal("got nil-slice")
+	}
+
+	// got slice with different length
+	if len(got) != len(expect) {
+		fmt.Printf("expected: %v\n", expect)
+		fmt.Printf("     got: %v\n", got)
+
+		t.Fatal("slices differ in size")
+	}
+
+	// slices with different elements
+	for i := 0; i < len(expect); i += 1 {
+		if got[i] != expect[i] {
+			t.Fatal("slices differ in elements")
+		}
+	}
 
 }

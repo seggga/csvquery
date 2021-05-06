@@ -1,18 +1,21 @@
 package rpn
 
+import "github.com/seggga/csvquery/token"
+
 // InsertValues finds tokens that represent some column in the query
 // and changes the token's value to corresponding data that came from the "map[csv-column]csv-value".
-func InsertValues(values map[string]string, rpn []string) []string {
+func InsertValues(values map[string]string, rpn []token.Lexemma) []token.Lexemma {
 
-	for i, token := range rpn {
-		if isVariable(token) {
-			rpn[i] = values[token]
+	for i, lex := range rpn {
+		if isVariable(lex) {
+			rpn[i].Litera = values[lex.Litera]
 		}
 	}
-	return nil
+	return rpn
 }
 
 // check if the token is a variable (column-name)
-func isVariable(token string) bool {
-	return false
+func isVariable(lex token.Lexemma) bool {
+
+	return lex.Token == "IDENT"
 }
