@@ -22,7 +22,8 @@ const (
 	ILLEGAL Token = iota
 	EOF
 	COMMENT
-
+	PAREN
+	COMP
 	literal_beg
 	// Identifiers and basic type literals
 	// (these tokens stand for classes of literals)
