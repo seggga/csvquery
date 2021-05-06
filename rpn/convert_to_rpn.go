@@ -1,45 +1,47 @@
 package rpn
 
-func ConvertToRPN(query []string) []string {
+import "github.com/seggga/csvquery/token"
 
-	var rpn, stack []string
-	var stackPriority, tokenPriority int
+func ConvertToRPN(query []token.Lexemma) []token.Lexemma {
 
-	for _, token := range query {
+	var rpn, stack []token.Lexemma
+	var stackPriority, lexPriority int
+
+	for _, lex := range query {
 		// операнд сразу заносится в выходную строку
-		if isOperand(token) {
-			rpn = append(rpn, token)
+		if isOperand(lex) {
+			rpn = append(rpn, lex)
 			continue
 		}
 
 		// открывающая скобка сразу идет в стек
-		if token == "(" {
-			stack = append(stack, token)
+		if lex.Litera == "(" {
+			stack = append(stack, lex)
 			continue
 		}
 
 		// закрывающая скобка извлекает все элементы из стека до символа "("
-		if token == ")" {
+		if lex.Litera == ")" {
 			for i := len(stack) - 1; i >= 0; i -= 1 {
-				stackToken := stack[i]
+				stackLex := stack[i]
 				stack = stack[:i]
 
-				if stackToken == "(" {
+				if stackLex.Litera == "(" {
 					break
 				}
 
-				rpn = append(rpn, stackToken)
+				rpn = append(rpn, stackLex)
 			}
 			continue
 		}
 
 		// оператор участвует в ветвлении
-		if isOperator(token) {
-			tokenPriority = getPriority(token)
+		if isOperator(lex) {
+			lexPriority = getPriority(lex)
 
 			// стек пуст - записываем знак операции в стек
 			if len(stack) == 0 {
-				stack = append(stack, token)
+				stack = append(stack, lex)
 				continue
 			}
 
@@ -47,23 +49,23 @@ func ConvertToRPN(query []string) []string {
 			// затем помещаем токен в стек
 			for i := len(stack) - 1; i >= 0; i -= 1 {
 
-				stackToken := stack[i]
-				stackPriority = getPriority(stackToken)
+				stackLex := stack[i]
+				stackPriority = getPriority(stackLex)
 
 				// приоритет у токена больше, чем у вершины стека - кладем токен в стек
-				if tokenPriority > stackPriority {
-					stack = append(stack, token)
+				if lexPriority > stackPriority {
+					stack = append(stack, lex)
 					break
 				}
 
 				stack = stack[:i]
 
-				rpn = append(rpn, stackToken)
+				rpn = append(rpn, stackLex)
 			}
 
 			// если из стека извлекли все операторы, то токен заносим в стек
 			if len(stack) == 0 {
-				stack = append(stack, token)
+				stack = append(stack, lex)
 			}
 
 		} // if isOperator(token)
@@ -71,18 +73,18 @@ func ConvertToRPN(query []string) []string {
 
 	// все токены просмотрены, надо опустошить стек
 	for i := len(stack) - 1; i >= 0; i -= 1 {
-		stackToken := stack[i]
+		stackLex := stack[i]
 		stack = stack[:i]
-		rpn = append(rpn, stackToken)
+		rpn = append(rpn, stackLex)
 	}
 
 	return rpn
 }
 
-func isOperator(token string) bool {
+func isOperator(lex token.Lexemma) bool {
 
-	switch token {
-	case ">", ">=", "<", "<=", "==", "=":
+	switch lex.Token {
+	case "COMP":
 		return true
 	case "AND", "OR":
 		return true
@@ -92,22 +94,22 @@ func isOperator(token string) bool {
 	}
 }
 
-func isOperand(token string) bool {
+func isOperand(lex token.Lexemma) bool {
 
-	if isOperator(token) {
+	if isOperator(lex) {
 		return false
 	}
 
-	switch token {
-	case "(", ")":
+	switch lex.Token {
+	case "PAREN":
 		return false
 	default:
 		return true
 	}
 }
 
-func getPriority(token string) int {
-	switch token {
+func getPriority(lex token.Lexemma) int {
+	switch lex.Litera {
 	case "(":
 		return 0
 	case ")":
