@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/seggga/csvquery/lexemma"
 	"github.com/seggga/csvquery/token"
 )
 
@@ -18,13 +17,9 @@ func main() {
 
 	query := `age > 40 AND (city_name == "Tokyo" OR new_issues <= 1000)`
 
-	lexx := lexemma.SplitQuery(query)
+	lexx := token.SplitQuery(query)
 	// fmt.Println(query)
 	// fmt.Printf("%+v\n", lexx)
 
-	if lexx[1].Token == token.COMP {
-		fmt.Println("comp")
-	}
-
-	fmt.Println(lexx[1].Token.String())
+	fmt.Println(lexx)
 }
