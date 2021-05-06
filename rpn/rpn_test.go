@@ -42,3 +42,7 @@ func TestIsOperator(t *testing.T) {
 		}
 	}
 }
+
+func TestInsertValues(t *testing.T) {
+
+}
