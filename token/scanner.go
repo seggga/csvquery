@@ -836,14 +836,17 @@ func (s *Scanner) Scan() (pos Pos, tok Token, lit string) {
 		// 	}
 		case ',':
 			tok = COMMA
+			lit = "."
 		case ';':
 			tok = SEMICOLON
 			lit = ";"
 		case '(':
 			tok = LPAREN
+			lit = "("
 		case ')':
 			insertSemi = true
 			tok = RPAREN
+			lit = ")"
 		// case '[':
 		// 	tok = mytoken.LBRACK
 		// case ']':
@@ -898,11 +901,29 @@ func (s *Scanner) Scan() (pos Pos, tok Token, lit string) {
 			// 	tok = mytoken.ARROW
 			// } else {
 			tok = s.switch2(LSS, LEQ)
+			if tok == LSS {
+				lit = "<"
+			}
+			if tok == LEQ {
+				lit = "<="
+			}
 			// }
 		case '>':
 			tok = s.switch2(GTR, GEQ)
+			if tok == GTR {
+				lit = ">"
+			}
+			if tok == GEQ {
+				lit = ">="
+			}
 		case '=':
 			tok = s.switch2(ASSIGN, EQL)
+			if tok == EQL {
+				lit = "=="
+			}
+			if tok == ASSIGN {
+				lit = "="
+			}
 		// case '!':
 		// 	tok = s.switch2(NOT, NEQ)
 		// case '&':
