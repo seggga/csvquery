@@ -4,7 +4,7 @@ import "testing"
 
 func TestConvertToRPN(t *testing.T) {
 	query := []string{"age", ">", "40", "AND", "(", "city", "=", "Tokyo", "OR", "new", ">=", "1000", ")"}
-	expected := []string{"city", "Tokyo", "=", "new", "1000", ">=", "OR", "age", "40", ">", "AND"}
+	expected := []string{"age", "40", ">", "city", "Tokyo", "=", "new", "1000", ">=", "OR", "AND"}
 	got := ConvertToRPN(query)
 
 	if got == nil {
