@@ -124,20 +124,20 @@ func TestInsertValues(t *testing.T) {
 func TestCalculateRPN(t *testing.T) {
 
 	rpn := []token.Lexemma{
-		{Token: "IDENT", Litera: "41"},
+		{Token: "IDENT", Litera: "4"},
 		{Token: "INT", Litera: "40"},
 		{Token: "COMP", Litera: ">"},
-		{Token: "IDENT", Litera: "Tokyo"},
+		{Token: "IDENT", Litera: "Moscow"},
 		{Token: "STRING", Litera: "Tokyo"},
 		{Token: "COMP", Litera: "=="},
-		{Token: "IDENT", Litera: "1001"},
+		{Token: "IDENT", Litera: "100"},
 		{Token: "INT", Litera: "1000"},
 		{Token: "COMP", Litera: ">="},
 		{Token: "OR", Litera: "OR"},
 		{Token: "AND", Litera: "AND"},
 	}
 
-	expect := true
+	expect := false
 
 	got, _ := CalculateRPN(rpn)
 
