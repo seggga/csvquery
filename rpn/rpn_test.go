@@ -120,3 +120,28 @@ func TestInsertValues(t *testing.T) {
 	}
 
 }
+
+func TestCalculateRPN(t *testing.T) {
+
+	rpn := []token.Lexemma{
+		{Token: "IDENT", Litera: "41"},
+		{Token: "INT", Litera: "40"},
+		{Token: "COMP", Litera: ">"},
+		{Token: "IDENT", Litera: "Tokyo"},
+		{Token: "STRING", Litera: "Tokyo"},
+		{Token: "COMP", Litera: "=="},
+		{Token: "IDENT", Litera: "1001"},
+		{Token: "INT", Litera: "1000"},
+		{Token: "COMP", Litera: ">="},
+		{Token: "OR", Litera: "OR"},
+		{Token: "AND", Litera: "AND"},
+	}
+
+	expect := true
+
+	got, _ := CalculateRPN(rpn)
+
+	if got != expect {
+		t.Fatalf("the answer is wrong:\nexpected: %t\n     got: %t", expect, got)
+	}
+}
