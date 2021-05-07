@@ -15,19 +15,22 @@ var (
 // represented as reverse polish notation (RPN)
 func CalculateRPN(rpn []token.Lexemma) (bool, error) {
 
-	for i := 0; i < len(rpn); i += 1 {
+	for i := 0; i < len(rpn); {
 
 		if !token.IsOperand(&rpn[i]) {
+			i += 1
 			continue
 		}
 		arg1 := rpn[i]
 
 		if !token.IsOperand(&rpn[i+1]) {
+			i += 1
 			continue
 		}
 		arg2 := rpn[i+1]
 
 		if !token.IsOperator(&rpn[i+2]) {
+			i += 1
 			continue
 		}
 		op := rpn[i+2]
