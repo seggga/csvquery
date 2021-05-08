@@ -18,7 +18,7 @@ var (
 
 func GetConfig(filePath string) (*ConfigType, error) {
 
-	// check file existance
+	// load toml-file
 	config, err := toml.LoadFile(filePath)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func GetConfig(filePath string) (*ConfigType, error) {
 
 	// obtain data
 	timeout := config.Get("csvquery.timeout").(int64)
-	grace := config.Get("csvquery.timeout").(int64)
+	grace := config.Get("csvquery.graceful").(int64)
 
 	// check values
 	if timeout == 0 {
