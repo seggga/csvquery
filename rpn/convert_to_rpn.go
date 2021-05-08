@@ -2,9 +2,9 @@ package rpn
 
 import "github.com/seggga/csvquery/token"
 
-func ConvertToRPN(query []token.Lexemma) []token.Lexemma {
+func ConvertToRPN(query []token.Lexema) []token.Lexema {
 
-	var rpn, stack []token.Lexemma
+	var rpn, stack []token.Lexema
 	var stackPriority, lexPriority int
 
 	for _, lex := range query {
@@ -81,7 +81,7 @@ func ConvertToRPN(query []token.Lexemma) []token.Lexemma {
 	return rpn
 }
 
-func isOperator(lex token.Lexemma) bool {
+func isOperator(lex token.Lexema) bool {
 
 	switch lex.Token {
 	case "COMP":
@@ -94,7 +94,7 @@ func isOperator(lex token.Lexemma) bool {
 	}
 }
 
-func isOperand(lex token.Lexemma) bool {
+func isOperand(lex token.Lexema) bool {
 
 	if isOperator(lex) {
 		return false
@@ -108,7 +108,7 @@ func isOperand(lex token.Lexemma) bool {
 	}
 }
 
-func getPriority(lex token.Lexemma) int {
+func getPriority(lex token.Lexema) int {
 	switch lex.Litera {
 	case "(":
 		return 0

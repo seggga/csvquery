@@ -2,10 +2,15 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/seggga/csvquery/config"
+	"github.com/seggga/csvquery/parse"
 	"github.com/seggga/csvquery/rpn"
 	"github.com/seggga/csvquery/token"
 	"github.com/sirupsen/logrus"
@@ -44,7 +49,7 @@ func main() {
 	defer fileErr.Close()
 	initLogErr(logErr, fileErr, conf)
 
-	// print binary path and commit version
+	// print binary's path and commit version
 	if printBinaryData() != nil {
 		fmt.Println(err)
 		return
@@ -56,34 +61,70 @@ func main() {
 	query, err := reader.ReadString('\n')
 	if err != nil {
 		logErr.Errorf("There is an error entering data.\n%v\n", err)
+		fmt.Println("cannot read data ")
 		return
 	}
 	logInfo.Infof("user's query is: %s", query)
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
 
-	//query := `age > 40 AND (city_name == "Tokyo" OR new_issues <= 1000)`
-
-	queryTokens := token.SplitQuery(query)
-	queryTokens = rpn.ConvertToRPN(queryTokens)
-
-	valuesMap := map[string]string{
-		"age":        "30",
-		"city_name":  "Moscow",
-		"new_issues": "1000",
+	// CheckQuery checks the user's query for matching the pattern "SELECT-FROM-WHERE"
+	err = parse.CheckQuery(query)
+	if err != nil {
+		logErr.Errorf("query is incorrect.\n%v\n", err)
+		fmt.Println("query is incorrect.")
+		return
 	}
-	currentSlice := rpn.InsertValues(valuesMap, queryTokens)
 
-	got, err := rpn.CalculateRPN(currentSlice)
+	// split query into lexemas
+	queryLex := token.SplitQuery(query)
+	// split lexemas into sections: SELECT, FROM and WHERE
+	lexMachine, err := parse.NewLexMachine(queryLex)
+	if err != nil {
+		logErr.Errorln(err)
+		fmt.Println(err)
+		return
+	}
+	lexMachine.Where = rpn.ConvertToRPN(lexMachine.Where)
 
-	fmt.Println("got:", got, "error:", err)
+	// create a listener for SIGINT
+	intChan := make(chan os.Signal, 1)
+	signal.Notify(intChan, syscall.SIGINT)
+	finishChan := make(chan struct{})
+
+	// context to set timeout
+	ctx := context.Context(context.Background())
+	ctx, cancelFunc := context.WithTimeout(ctx, time.Duration(conf.Timeout))
+
+	//
+
+	// run scanner for csv-files
+	//	go func(finishChan, ctx) {}()
+
+	// watch for the interrupt signals and ctx closing because of timeout
+	select {
+	case <-intChan:
+		logErr.Errorln("Program has been interrupted by user")
+		fmt.Println("Program has been interrupted by user")
+		cancelFunc()
+	case <-ctx.Done():
+		logErr.Errorln("there is no time left")
+		fmt.Println("there is no time left")
+	}
+
+	// graceful shutdown to close opened csv-files
+	timeOuter := time.NewTimer(time.Duration(conf.Graceful))
+	select {
+	case <-finishChan:
+		logInfo.Println("all csv-files has been closed successfully")
+	case <-timeOuter.C:
+		logErr.Errorln("some csv-files has not been closed")
+	}
+
+	fmt.Println("Program exit")
+	// currentSlice := rpn.InsertValues(valuesMap, queryTokens)
+
+	// got, err := rpn.CalculateRPN(currentSlice)
+
+	// fmt.Println("got:", got, "error:", err)
 }
 
 // initLogInfo - initializes info logger

@@ -8,7 +8,7 @@ import (
 )
 
 func TestConvertToRPN(t *testing.T) {
-	query := []token.Lexemma{
+	query := []token.Lexema{
 		{Token: "IDENT", Litera: "age"},
 		{Token: "COMP", Litera: ">"},
 		{Token: "INT", Litera: "40"},
@@ -24,7 +24,7 @@ func TestConvertToRPN(t *testing.T) {
 		{Token: "PAREN", Litera: ")"},
 	}
 
-	expect := []token.Lexemma{
+	expect := []token.Lexema{
 		{Token: "IDENT", Litera: "age"},
 		{Token: "INT", Litera: "40"},
 		{Token: "COMP", Litera: ">"},
@@ -63,7 +63,7 @@ func TestConvertToRPN(t *testing.T) {
 
 func TestInsertValues(t *testing.T) {
 
-	initialRPN := []token.Lexemma{
+	initialRPN := []token.Lexema{
 		{Token: "IDENT", Litera: "age"},
 		{Token: "INT", Litera: "40"},
 		{Token: "COMP", Litera: ">"},
@@ -83,7 +83,7 @@ func TestInsertValues(t *testing.T) {
 		"some_data": "data",
 	}
 
-	expect := []token.Lexemma{
+	expect := []token.Lexema{
 		{Token: "IDENT", Litera: "35"},
 		{Token: "INT", Litera: "40"},
 		{Token: "COMP", Litera: ">"},
@@ -123,7 +123,7 @@ func TestInsertValues(t *testing.T) {
 
 func TestCalculateRPN(t *testing.T) {
 
-	rpn := []token.Lexemma{
+	rpn := []token.Lexema{
 		{Token: "IDENT", Litera: "4"},
 		{Token: "INT", Litera: "40"},
 		{Token: "COMP", Litera: ">"},

@@ -1,9 +1,9 @@
 package token
 
-func SplitQuery(query string) []Lexemma {
+func SplitQuery(query string) []Lexema {
 
 	var scanner Scanner
-	var lexx []Lexemma
+	var lexx []Lexema
 
 	fset := NewFileSet()
 	file := fset.AddFile("", fset.Base(), len(query))
@@ -23,7 +23,7 @@ func SplitQuery(query string) []Lexemma {
 		if tok.String() == "STRING" {
 			lit = lit[1 : len(lit)-1]
 		}
-		lexx = append(lexx, Lexemma{Token: tok.String(), Litera: lit})
+		lexx = append(lexx, Lexema{Token: tok.String(), Litera: lit})
 	}
 
 	return lexx

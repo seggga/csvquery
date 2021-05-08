@@ -1,12 +1,12 @@
 package token
 
-type Lexemma struct {
+type Lexema struct {
 	Token  string
 	Litera string
 }
 
 //
-func IsOperator(l *Lexemma) bool {
+func IsOperator(l *Lexema) bool {
 	switch l.Litera {
 	case ">", ">=", "<", "<=", "==", "=":
 		return true
@@ -18,7 +18,7 @@ func IsOperator(l *Lexemma) bool {
 	}
 }
 
-func IsOperand(l *Lexemma) bool {
+func IsOperand(l *Lexema) bool {
 
 	if IsOperator(l) {
 		return false

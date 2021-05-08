@@ -13,7 +13,7 @@ var (
 
 // CalculateRPN - implements the mathematical calculation of given slice
 // represented as reverse polish notation (RPN)
-func CalculateRPN(rpn []token.Lexemma) (bool, error) {
+func CalculateRPN(rpn []token.Lexema) (bool, error) {
 
 	for i := 0; i < len(rpn); {
 
@@ -60,7 +60,7 @@ func CalculateRPN(rpn []token.Lexemma) (bool, error) {
 // solveExpression calculates a given expression.
 // As a result it makes token.Lexemma{Token: "IDENT", Litera: "TRUE"/"FALSE"}
 // The main goal is to pass 'Litera' field with "TRUE" or "FALSE" value.
-func solveExpression(arg1, arg2, op token.Lexemma) (token.Lexemma, error) {
+func solveExpression(arg1, arg2, op token.Lexema) (token.Lexema, error) {
 
 	var result bool
 
@@ -85,7 +85,7 @@ func solveExpression(arg1, arg2, op token.Lexemma) (token.Lexemma, error) {
 		} else if arg1.Litera == "FALSE" {
 			operand1 = false
 		} else {
-			return token.Lexemma{}, error1
+			return token.Lexema{}, error1
 		}
 
 		// check if arg2 is 'true' / 'false'
@@ -94,7 +94,7 @@ func solveExpression(arg1, arg2, op token.Lexemma) (token.Lexemma, error) {
 		} else if arg2.Litera == "FALSE" {
 			operand2 = false
 		} else {
-			return token.Lexemma{}, error1
+			return token.Lexema{}, error1
 		}
 
 		result = operand1 && operand2
@@ -109,7 +109,7 @@ func solveExpression(arg1, arg2, op token.Lexemma) (token.Lexemma, error) {
 		} else if arg1.Litera == "FALSE" {
 			operand1 = false
 		} else {
-			return token.Lexemma{}, error1
+			return token.Lexema{}, error1
 		}
 
 		// check if arg2 is 'true' / 'false'
@@ -118,14 +118,14 @@ func solveExpression(arg1, arg2, op token.Lexemma) (token.Lexemma, error) {
 		} else if arg2.Litera == "FALSE" {
 			operand2 = false
 		} else {
-			return token.Lexemma{}, error1
+			return token.Lexema{}, error1
 		}
 
 		result = operand1 || operand2
 	}
 
 	if result {
-		return token.Lexemma{Token: "IDENT", Litera: "TRUE"}, nil
+		return token.Lexema{Token: "IDENT", Litera: "TRUE"}, nil
 	}
-	return token.Lexemma{Token: "IDENT", Litera: "FALSE"}, nil
+	return token.Lexema{Token: "IDENT", Litera: "FALSE"}, nil
 }

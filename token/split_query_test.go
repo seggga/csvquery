@@ -6,7 +6,7 @@ func TestSplitQuery(t *testing.T) {
 
 	query := `age > 40 AND (city_name == "Tokyo" OR new_issues <= 1000)`
 
-	expected := []Lexemma{
+	expected := []Lexema{
 		{Token: "IDENT", Litera: "age"},
 		{Token: "COMP", Litera: ">"},
 		{Token: "INT", Litera: "40"},
