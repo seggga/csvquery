@@ -12,10 +12,11 @@ var (
 )
 
 type LexMachine struct {
-	State  int
-	Select []token.Lexema
-	From   []token.Lexema
-	Where  []token.Lexema
+	State   int
+	Columns int // defines the number of columns that were mentioned it the query (SELECT and WHERE statements)
+	Select  []token.Lexema
+	From    []token.Lexema
+	Where   []token.Lexema
 }
 
 // NewLexMachine fills up fields of the struct LexMachine
@@ -40,10 +41,16 @@ func NewLexMachine(queryLex []token.Lexema) (*LexMachine, error) {
 		switch lm.State {
 		case 1:
 			lm.Select = append(lm.Select, lex)
+			if lex.Token == "IDENT" {
+				lm.Columns += 1
+			}
 		case 2:
 			lm.From = append(lm.From, lex)
 		case 3:
 			lm.Where = append(lm.Where, lex)
+			if lex.Token == "IDENT" {
+				lm.Columns += 1
+			}
 		}
 	}
 

@@ -11,7 +11,6 @@ import (
 
 	"github.com/seggga/csvquery/config"
 	"github.com/seggga/csvquery/parse"
-	"github.com/seggga/csvquery/rpn"
 	"github.com/seggga/csvquery/token"
 	"github.com/sirupsen/logrus"
 )
@@ -83,7 +82,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	lexMachine.Where = rpn.ConvertToRPN(lexMachine.Where)
 
 	// create a listener for SIGINT
 	intChan := make(chan os.Signal, 1)
@@ -123,9 +121,4 @@ func main() {
 	}
 
 	fmt.Println("Program exit")
-	// currentSlice := rpn.InsertValues(valuesMap, queryTokens)
-
-	// got, err := rpn.CalculateRPN(currentSlice)
-
-	// fmt.Println("got:", got, "error:", err)
 }

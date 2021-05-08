@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/seggga/csvquery/parse"
+	"github.com/seggga/csvquery/rpn"
 )
 
 func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{}, ctx context.Context) {
@@ -17,13 +18,15 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 		close(finishChan)
 	}()
 
-	stopCycle := false  // a flag to show that ctx-channel is closed
+	lm.Where = rpn.ConvertToRPN(lm.Where)
+
+	loopFiles := true   // a flag to indicate that the loop on files in FROM statement should be stopped
 	printHeader := true // a flag to show the need to print the table's header
 
 	//	scan csv-files
 	for _, fileNameLex := range lm.From {
 
-		if stopCycle {
+		if !loopFiles {
 			break
 		}
 
@@ -42,31 +45,33 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 		}
 
 		// read the header of the csv-file
-		reader := csv.NewReader(file)  // Считываем файл с помощью библиотеки encoding/csv
-		fileCols, err := reader.Read() //  Считываем шапку таблицы
+		reader := csv.NewReader(file)     // Считываем файл с помощью библиотеки encoding/csv
+		tableHeader, err := reader.Read() //  Считываем шапку таблицы
 		if err != nil {
-			errorChan <- fmt.Errorf("Cannot read file %s: %v", fileName, err)
+			errorChan <- fmt.Errorf("cannot read file %s: %v", fileName, err)
 			return
 		}
 
 		// compare columns sets from the query and the file
-		err = parse.CheckCols(fileCols, lm)
+		err = parse.CheckCols(tableHeader, lm)
 		if err != nil {
 			errorChan <- fmt.Errorf("query does not fit the file data: %v", err)
 			return
 		}
 
+		// print header if has not been printed yet
 		if printHeader {
-			parse.PrintTheLine(fileCols, lm)
+			parse.PrintHeader(lm)
 			printHeader = false
 		}
 
-		for {
+		loop := true
+		for loop {
 
 			select {
 			case <-ctx.Done():
-				stopCycle = true
-				break
+				loopFiles = false
+				loop = false
 			default:
 
 				row, err := reader.Read()
@@ -75,17 +80,24 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 				}
 
 				if err != nil {
-					errorChan <- fmt.Errorf("Error reading csv-file %s: %v", fileName, err)
-					stopCycle = true
+					errorChan <- fmt.Errorf("error reading csv-file %s: %v", fileName, err)
+					loopFiles = false
 					break
 				}
-				// compose a map holding data of the current row
-				rowData := mylexer.FillTheMap(fileCols, row, lm)
+				// compose a map with data of the current row: map[column_name]column_value
+				valuesMap := parse.FillTheMap(tableHeader, row, lm)
 				// create a slice based on the conditions in WHERE-statement
-				lexSlice := mylexer.MakeSlice(rowData, lm)
+				lexSlice := rpn.InsertValues(valuesMap, lm.Where)
 
-				if mylexer.Execute(lexSlice) {
-					_ = mylexer.PrintTheRow(rowData, lm)
+				result, err := rpn.CalculateRPN(lexSlice)
+				if err != nil {
+					errorChan <- fmt.Errorf("%v", err)
+					loopFiles = false
+					break
+				}
+
+				if result {
+					parse.PrintLine(valuesMap, lm)
 				}
 			}
 		}
