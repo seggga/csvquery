@@ -88,19 +88,22 @@ func main() {
 	// create a listener for SIGINT
 	intChan := make(chan os.Signal, 1)
 	signal.Notify(intChan, syscall.SIGINT)
+	errorChan := make(chan error)
 	finishChan := make(chan struct{})
 
 	// context to set timeout
 	ctx := context.Context(context.Background())
 	ctx, cancelFunc := context.WithTimeout(ctx, time.Duration(conf.Timeout))
 
-	//
-
 	// run scanner for csv-files
-	//	go func(finishChan, ctx) {}()
+	go scanCSV(lexMachine, errorChan, finishChan, ctx)
 
 	// watch for the interrupt signals and ctx closing because of timeout
 	select {
+	case err := <-errorChan:
+		logErr.Errorln(err)
+		fmt.Println("there is an error while reading csv-files")
+		return
 	case <-intChan:
 		logErr.Errorln("Program has been interrupted by user")
 		fmt.Println("Program has been interrupted by user")
@@ -125,38 +128,4 @@ func main() {
 	// got, err := rpn.CalculateRPN(currentSlice)
 
 	// fmt.Println("got:", got, "error:", err)
-}
-
-// initLogInfo - initializes info logger
-func initLogInfo(log *logrus.Logger, file *os.File, conf *config.ConfigType) {
-
-	log.SetLevel(logrus.InfoLevel)
-	log.SetFormatter(&logrus.JSONFormatter{})
-	log.SetOutput(file)
-	log.Info("logging started")
-	log.Info("command-line parameters:")
-	log.Infof("timeout: %s", conf.Timeout)
-}
-
-// initLogErr - initializes error logger
-func initLogErr(log *logrus.Logger, file *os.File, conf *config.ConfigType) {
-	log.SetLevel(logrus.ErrorLevel)
-	log.SetFormatter(&logrus.JSONFormatter{})
-	log.SetOutput(file)
-}
-
-// printBinaryData prints data about the binary
-func printBinaryData() error {
-
-	// print current directory path
-	path, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	fmt.Printf("binary path: %s\n", path)
-
-	// print commit
-	fmt.Printf("commit version: %s\n", gitCommit)
-
-	return nil
 }

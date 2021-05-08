@@ -2,7 +2,7 @@ test:
 	go test ./...
 
 run:
-	go run main.go
+	go run .
 
 # 	разбор алгоритма	http://www.interface.ru/home.asp?artId=1492
 # разбор логических операций https://www.semestr.online/informatics/polish.php
