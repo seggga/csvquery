@@ -25,7 +25,7 @@ func CheckQuery(query string) error {
 
 	// check matching to the pattern
 	matched, _ := regexp.Match(pattern, []byte(query))
-	if matched {
+	if !matched {
 		return error2
 	}
 
