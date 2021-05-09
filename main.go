@@ -64,6 +64,7 @@ func main() {
 		return
 	}
 	logInfo.Infof("user's query is: %s", query)
+	// query := `select a, b, c FROM file.csv WHERE a > b`
 
 	// CheckQuery checks the user's query for matching the pattern "SELECT-FROM-WHERE"
 	err = parse.CheckQuery(query)
