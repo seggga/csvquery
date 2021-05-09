@@ -15,7 +15,7 @@ func initLogInfo(log *logrus.Logger, file *os.File, conf *config.ConfigType) {
 	log.SetOutput(file)
 	log.Info("logging started")
 	log.Info("command-line parameters:")
-	log.Infof("timeout: %s", conf.Timeout)
+	log.Infof("timeout: %d", conf.Timeout)
 }
 
 // initLogErr - initializes error logger
