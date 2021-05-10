@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,22 +31,33 @@ func main() {
 
 	// create info logger
 	logInfo := logrus.New()
-	fileInfo, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	fileInfo, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer fileInfo.Close()
+	defer func() {
+		err = fileInfo.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	initLogInfo(logInfo, fileInfo, conf)
 
 	// create error logger
 	logErr := logrus.New()
-	fileErr, err := os.OpenFile(errFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	fileErr, err := os.OpenFile(errFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer fileErr.Close()
+	defer func() {
+		err = fileErr.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 	initLogErr(logErr, fileErr, conf)
 
 	// print binary's path and commit version

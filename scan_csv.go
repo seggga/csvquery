@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/seggga/csvquery/parse"
 	"github.com/seggga/csvquery/rpn"
@@ -38,7 +40,7 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 		}
 
 		// file opening
-		file, err := os.OpenFile(fileName, os.O_RDONLY, 0600)
+		file, err := os.OpenFile(filepath.Clean(fileName), os.O_RDONLY, 0600)
 		if err != nil {
 			errorChan <- fmt.Errorf("unable to read file %s. %w", fileName, err)
 			return
@@ -48,14 +50,14 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 		reader := csv.NewReader(file)     // Считываем файл с помощью библиотеки encoding/csv
 		tableHeader, err := reader.Read() //  Считываем шапку таблицы
 		if err != nil {
-			errorChan <- fmt.Errorf("cannot read file %s: %v", fileName, err)
+			errorChan <- fmt.Errorf("cannot read file %s: %w", fileName, err)
 			return
 		}
 
 		// compare columns sets from the query and the file
 		err = parse.CheckCols(tableHeader, lm)
 		if err != nil {
-			errorChan <- fmt.Errorf("query does not fit the file data: %v", err)
+			errorChan <- fmt.Errorf("query does not fit the file data: %w", err)
 			return
 		}
 
@@ -75,12 +77,12 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 			default:
 
 				row, err := reader.Read()
-				if err == io.EOF {
+				if errors.Is(err, io.EOF) {
 					break
 				}
 
 				if err != nil {
-					errorChan <- fmt.Errorf("error reading csv-file %s: %v", fileName, err)
+					errorChan <- fmt.Errorf("error reading csv-file %s: %w", fileName, err)
 					loopFiles = false
 					break
 				}
@@ -91,7 +93,7 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 
 				result, err := rpn.CalculateRPN(lexSlice)
 				if err != nil {
-					errorChan <- fmt.Errorf("%v", err)
+					errorChan <- fmt.Errorf("%w", err)
 					loopFiles = false
 					break
 				}
@@ -104,7 +106,7 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 
 		// closing file
 		if err := file.Close(); err != nil {
-			errorChan <- fmt.Errorf("error while closing a file %s %v", fileName, err)
+			errorChan <- fmt.Errorf("error while closing a file %s %w", fileName, err)
 			return
 		}
 
