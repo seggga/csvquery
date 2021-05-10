@@ -74,9 +74,9 @@ func main() {
 		fmt.Println("cannot read data ")
 		return
 	}
-	// query := `SELECT continent, date, new_cases FROM "owid-covid-data.csv" WHERE new_deaths_smoothed > 1000`
+
+	// query := `SELECT location, new_cases FROM "owid-covid-data.csv" WHERE iso_code == "AFG"`
 	logInfo.Infof("user's query is: %s", query)
-	// query := `select a, b, c FROM file.csv WHERE a > b`
 
 	// CheckQuery checks the user's query for matching the pattern "SELECT-FROM-WHERE"
 	err = parse.CheckQuery(query)
@@ -108,7 +108,7 @@ func main() {
 
 	// run scanner for csv-files
 	go scanCSV(lexMachine, errorChan, finishChan, ctx)
-	// scanCSV(lexMachine, errorChan, finishChan, ctx)
+	// scanCSV(lexMachine, errorChan, finishChan, ctx) // debug-string
 	// watch for the interrupt signals and ctx closing because of timeout
 	select {
 	case err := <-errorChan:
@@ -122,6 +122,8 @@ func main() {
 	case <-ctx.Done():
 		logErr.Errorln("there is no time left")
 		fmt.Println("there is no time left")
+	case <-finishChan:
+		return
 	}
 
 	// graceful shutdown to close opened csv-files

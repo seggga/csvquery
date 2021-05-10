@@ -33,6 +33,7 @@ func FillTheMap(header, data []string, lm *LexMachine) map[string]string {
 		for i := 0; i < len(header); i += 1 {
 			if strings.EqualFold(lex.Litera, header[i]) {
 				valuesMap[lex.Litera] = data[i]
+				break
 			}
 		}
 	}
@@ -45,6 +46,7 @@ func FillTheMap(header, data []string, lm *LexMachine) map[string]string {
 		for i := 0; i < len(header); i += 1 {
 			if strings.EqualFold(lex.Litera, header[i]) {
 				valuesMap[lex.Litera] = data[i]
+				break
 			}
 		}
 	}
