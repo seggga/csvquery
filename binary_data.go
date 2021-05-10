@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+var gitCommit string // print git commit version when program starts
+
 // printBinaryData prints data about the binary
 func printBinaryData() error {
 

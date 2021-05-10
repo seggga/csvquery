@@ -26,7 +26,7 @@ func PrintHeader(lm *LexMachine) {
 // FillTheMap produces a map with data of the current row: map[column_name]column_value
 func FillTheMap(header, data []string, lm *LexMachine) map[string]string {
 
-	valuesMap := make(map[string]string, lm.Columns)
+	valuesMap := make(map[string]string, len(lm.Select))
 
 	// fill the output map with SELECT-data
 	for _, lex := range lm.Select {

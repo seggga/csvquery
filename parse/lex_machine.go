@@ -40,12 +40,14 @@ func NewLexMachine(queryLex []token.Lexema) (*LexMachine, error) {
 
 		switch lm.State {
 		case 1:
-			lm.Select = append(lm.Select, lex)
 			if lex.Token == "IDENT" {
+				lm.Select = append(lm.Select, lex)
 				lm.Columns += 1
 			}
 		case 2:
-			lm.From = append(lm.From, lex)
+			if lex.Token == "STRING" {
+				lm.From = append(lm.From, lex)
+			}
 		case 3:
 			lm.Where = append(lm.Where, lex)
 			if lex.Token == "IDENT" {

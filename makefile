@@ -5,7 +5,7 @@ check:
 
 build:
 	@mkdir -p ${LOCAL_BIN}
-	@go build -o ${LOCAL_BIN}/csvquery $(CURDIR)
+	@go build -o ${LOCAL_BIN}/csvquery $(CURDIR)/.
 
 test:
 	go test -cover ./...

@@ -17,14 +17,13 @@ import (
 )
 
 var (
-	gitCommit string                // print git commit version when program starts
-	logFile   string = "access.log" // log-file to hold user's querys
-	errFile   string = "error.log"  // error-log file, holds interrupt, timeout issues and invalid user's query
+	logFile string = "access.log" // log-file to hold user's querys
+	errFile string = "error.log"  // error-log file, holds interrupt, timeout issues and invalid user's query
 )
 
 func main() {
 	// load configuration from file
-	conf, err := config.GetConfig("config/config.toml")
+	conf, err := config.GetConfig("config.toml")
 	if err != nil {
 		panic(err)
 	}
@@ -75,6 +74,7 @@ func main() {
 		fmt.Println("cannot read data ")
 		return
 	}
+	// query := `SELECT continent, date, new_cases FROM "owid-covid-data.csv" WHERE new_deaths_smoothed > 1000`
 	logInfo.Infof("user's query is: %s", query)
 	// query := `select a, b, c FROM file.csv WHERE a > b`
 
@@ -104,11 +104,11 @@ func main() {
 
 	// context to set timeout
 	ctx := context.Context(context.Background())
-	ctx, cancelFunc := context.WithTimeout(ctx, time.Duration(conf.Timeout))
+	ctx, cancelFunc := context.WithTimeout(ctx, time.Second*time.Duration(conf.Timeout))
 
 	// run scanner for csv-files
 	go scanCSV(lexMachine, errorChan, finishChan, ctx)
-
+	// scanCSV(lexMachine, errorChan, finishChan, ctx)
 	// watch for the interrupt signals and ctx closing because of timeout
 	select {
 	case err := <-errorChan:
@@ -125,7 +125,7 @@ func main() {
 	}
 
 	// graceful shutdown to close opened csv-files
-	timeOuter := time.NewTimer(time.Duration(conf.Graceful))
+	timeOuter := time.NewTimer(time.Second * time.Duration(conf.Graceful))
 	select {
 	case <-finishChan:
 		logInfo.Println("all csv-files has been closed successfully")
