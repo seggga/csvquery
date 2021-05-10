@@ -1,0 +1,7 @@
+# this is a configuration file
+
+title = "csvquery TOML config"
+
+[csvquery]
+timeout = 20             # timeout in seconds - limits overal working time
+graceful = 2            # timeout in seconds - limits time for graceful shutdown

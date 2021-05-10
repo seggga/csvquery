@@ -78,12 +78,14 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 
 				row, err := reader.Read()
 				if errors.Is(err, io.EOF) {
+					loop = false
 					break
 				}
 
 				if err != nil {
 					errorChan <- fmt.Errorf("error reading csv-file %s: %w", fileName, err)
 					loopFiles = false
+					loop = false
 					break
 				}
 				// compose a map with data of the current row: map[column_name]column_value
@@ -93,8 +95,9 @@ func scanCSV(lm *parse.LexMachine, errorChan chan error, finishChan chan struct{
 
 				result, err := rpn.CalculateRPN(lexSlice)
 				if err != nil {
-					errorChan <- fmt.Errorf("%w", err)
+					errorChan <- fmt.Errorf("%w, file: %s, data: %v", err, fileName, row)
 					loopFiles = false
+					loop = false
 					break
 				}
 
